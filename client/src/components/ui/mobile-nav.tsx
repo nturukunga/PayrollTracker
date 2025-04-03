@@ -56,10 +56,14 @@ export function MobileNav({ className }: MobileNavProps) {
       href: "/attendance",
     },
     {
-      label: "More",
-      icon: MoreHorizontal,
-      href: "#",
-      isSheet: true,
+      label: "Reports",
+      icon: FileText,
+      href: "/reports",
+    },
+    {
+      label: "Settings",
+      icon: Settings,
+      href: "/settings",
     },
   ];
   
@@ -103,69 +107,19 @@ export function MobileNav({ className }: MobileNavProps) {
     )}>
       <div className="flex justify-around">
         {navItems.map((item) => (
-          item.isSheet ? (
-            <Sheet key={item.label} open={isMoreOpen} onOpenChange={setIsMoreOpen}>
-              <SheetTrigger asChild>
-                <button 
-                  className={cn(
-                    "flex flex-col items-center py-2",
-                    isMoreOpen
-                      ? "text-primary"
-                      : "text-neutral-400 hover:text-primary"
-                  )}
-                >
-                  <item.icon className="h-5 w-5" />
-                  <span className="text-xs">{item.label}</span>
-                </button>
-              </SheetTrigger>
-              <SheetContent side="bottom" className="h-[60vh] rounded-t-xl pt-6">
-                <SheetHeader>
-                  <SheetTitle className="text-center mb-4">More Options</SheetTitle>
-                </SheetHeader>
-                <div className="grid grid-cols-3 gap-4 p-2">
-                  {moreItems.map((moreItem) => (
-                    <div key={moreItem.label} className="flex flex-col items-center">
-                      {moreItem.href ? (
-                        <Link
-                          href={moreItem.href}
-                          onClick={() => setIsMoreOpen(false)}
-                          className="flex flex-col items-center p-4 hover:bg-gray-100 rounded-lg w-full text-center"
-                        >
-                          <moreItem.icon className="h-6 w-6 mb-2 text-primary" />
-                          <span className="text-sm">{moreItem.label}</span>
-                        </Link>
-                      ) : (
-                        <button
-                          onClick={() => {
-                            setIsMoreOpen(false);
-                            if (moreItem.onClick) moreItem.onClick();
-                          }}
-                          className="flex flex-col items-center p-4 hover:bg-gray-100 rounded-lg w-full text-center"
-                        >
-                          <moreItem.icon className="h-6 w-6 mb-2 text-primary" />
-                          <span className="text-sm">{moreItem.label}</span>
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </SheetContent>
-            </Sheet>
-          ) : (
-            <Link
-              key={item.label}
-              href={item.href}
-              className={cn(
-                "flex flex-col items-center py-2",
-                location === item.href
-                  ? "text-primary"
-                  : "text-neutral-400 hover:text-primary"
-              )}
-            >
-              <item.icon className="h-5 w-5" />
-              <span className="text-xs">{item.label}</span>
-            </Link>
-          )
+          <Link
+            key={item.label}
+            href={item.href}
+            className={cn(
+              "flex flex-col items-center py-2",
+              location === item.href
+                ? "text-primary"
+                : "text-neutral-400 hover:text-primary"
+            )}
+          >
+            <item.icon className="h-5 w-5" />
+            <span className="text-xs">{item.label}</span>
+          </Link>
         ))}
       </div>
     </nav>

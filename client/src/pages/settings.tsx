@@ -565,7 +565,7 @@ export default function Settings() {
                     <Input
                       id="db_host"
                       placeholder="PostgreSQL host"
-                      value={process.env.PGHOST || "Replit PostgreSQL"}
+                      value={"Replit PostgreSQL"}
                       readOnly
                     />
                   </div>
@@ -575,7 +575,7 @@ export default function Settings() {
                     <Input
                       id="db_port"
                       placeholder="PostgreSQL port"
-                      value={process.env.PGPORT || "5432"}
+                      value={"5432"}
                       readOnly
                     />
                   </div>
@@ -585,7 +585,7 @@ export default function Settings() {
                     <Input
                       id="db_name"
                       placeholder="Database name"
-                      value={process.env.PGDATABASE || "postgres"}
+                      value={"postgres"}
                       readOnly
                     />
                   </div>
@@ -595,7 +595,7 @@ export default function Settings() {
                     <Input
                       id="db_user"
                       placeholder="Username"
-                      value={process.env.PGUSER || "postgres"}
+                      value={"postgres"}
                       readOnly
                     />
                   </div>

@@ -9,9 +9,13 @@ import {
   FileText,
   Settings,
   HelpCircle,
-  Search
+  Search,
+  UserCircle,
+  LogOut
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 
 interface SidebarProps {
   className?: string;
@@ -20,6 +24,8 @@ interface SidebarProps {
 export function Sidebar({ className }: SidebarProps) {
   const [location] = useLocation();
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const { toast } = useToast();
+  const { logoutMutation } = useAuth();
   
   const navItems = [
     {
@@ -97,10 +103,34 @@ export function Sidebar({ className }: SidebarProps) {
           ))}
         </div>
         
-        <div className="absolute bottom-0 w-full p-4">
-          <div className="flex items-center px-4 py-3 text-neutral-500 hover:bg-blue-50 cursor-pointer">
+        <div className="absolute bottom-0 w-full p-4 space-y-1">
+          <Link
+            href="/profile"
+            className="flex items-center px-4 py-3 text-neutral-500 hover:bg-blue-50 cursor-pointer"
+          >
+            <UserCircle className="mr-3 h-5 w-5" />
+            <span>Profile</span>
+          </Link>
+          
+          <div 
+            className="flex items-center px-4 py-3 text-neutral-500 hover:bg-blue-50 cursor-pointer"
+            onClick={() => {
+              toast({
+                title: "Help & Support",
+                description: "Contact administrator for assistance at support@payrollpro.com",
+              });
+            }}
+          >
             <HelpCircle className="mr-3 h-5 w-5" />
             <span>Help & Support</span>
+          </div>
+          
+          <div 
+            className="flex items-center px-4 py-3 text-neutral-500 hover:bg-blue-50 cursor-pointer"
+            onClick={() => logoutMutation.mutate()}
+          >
+            <LogOut className="mr-3 h-5 w-5" />
+            <span>Logout</span>
           </div>
         </div>
       </nav>
