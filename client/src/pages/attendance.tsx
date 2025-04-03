@@ -98,15 +98,30 @@ export default function Attendance() {
     {
       accessorKey: "status",
       header: "Status",
-      cell: ({ row }) => (
-        <Badge variant={
-          row.original.status === 'present' ? 'success' :
-          row.original.status === 'late' ? 'warning' :
-          row.original.status === 'absent' ? 'destructive' : 'default'
-        }>
-          {row.original.status.charAt(0).toUpperCase() + row.original.status.slice(1)}
-        </Badge>
-      ),
+      cell: ({ row }) => {
+        // Define custom styling based on status instead of using variants
+        const getBadgeClassByStatus = (status: string): string => {
+          switch(status) {
+            case 'present': 
+              return "bg-green-100 text-green-800 hover:bg-green-100/80";
+            case 'late': 
+              return "bg-amber-100 text-amber-800 hover:bg-amber-100/80";
+            case 'absent': 
+              return "bg-destructive text-destructive-foreground hover:bg-destructive/90";
+            default: 
+              return "";
+          }
+        };
+        
+        return (
+          <Badge 
+            variant="outline"
+            className={getBadgeClassByStatus(row.original.status)}
+          >
+            {row.original.status.charAt(0).toUpperCase() + row.original.status.slice(1)}
+          </Badge>
+        );
+      },
     },
     {
       accessorKey: "hours",
@@ -227,7 +242,7 @@ export default function Attendance() {
                   <SelectValue placeholder="All Departments" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Departments</SelectItem>
+                  <SelectItem value="all_departments">All Departments</SelectItem>
                   {departments.map((dept) => (
                     <SelectItem key={dept.id} value={dept.name}>
                       {dept.name}

@@ -1,7 +1,7 @@
 import express, { type Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, hashPassword, comparePasswords } from "./auth";
+import { hashPassword, comparePasswords } from "./auth";
 import { z, ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { 

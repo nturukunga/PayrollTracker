@@ -470,7 +470,7 @@ export function PayrollForm({ isOpen, onClose, payrollPeriodId, payrollItemId, m
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="">All Departments</SelectItem>
+                        <SelectItem value="all_departments">All Departments</SelectItem>
                         {departmentOptions.map((option) => (
                           <SelectItem key={option.value} value={option.value.toString()}>
                             {option.label}
