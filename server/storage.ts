@@ -1,5 +1,5 @@
 import { eq, and, isNull, desc, sql } from "drizzle-orm";
-import { db } from "./db";
+import { getDb } from "./db";
 import { 
   users, activities, allowances, allowanceTypes, attendance, 
   approvals, deductions, deductionTypes, departments, 
@@ -111,22 +111,22 @@ export interface IStorage {
 export class DatabaseStorage implements IStorage {
   // User Methods
   async getUser(id: number): Promise<User | undefined> {
-    const result = await db.select().from(users).where(eq(users.id, id));
+    const result = await getDb().select().from(users).where(eq(users.id, id));
     return result[0];
   }
   
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const result = await db.select().from(users).where(eq(users.username, username));
+    const result = await getDb().select().from(users).where(eq(users.username, username));
     return result[0];
   }
   
   async createUser(user: InsertUser): Promise<User> {
-    const [result] = await db.insert(users).values(user).returning();
+    const [result] = await getDb().insert(users).values(user).returning();
     return result;
   }
   
   async updateUser(id: number, userData: Partial<InsertUser>): Promise<User | undefined> {
-    const [updated] = await db
+    const [updated] = await getDb()
       .update(users)
       .set(userData)
       .where(eq(users.id, id))
@@ -135,27 +135,27 @@ export class DatabaseStorage implements IStorage {
   }
   
   async deleteUser(id: number): Promise<boolean> {
-    const result = await db.delete(users).where(eq(users.id, id));
+    const result = await getDb().delete(users).where(eq(users.id, id));
     return result.length > 0;
   }
   
   // Employee Methods
   async getEmployee(id: number): Promise<Employee | undefined> {
-    const result = await db.select().from(employees).where(eq(employees.id, id));
+    const result = await getDb().select().from(employees).where(eq(employees.id, id));
     return result[0];
   }
   
   async getAllEmployees(): Promise<Employee[]> {
-    return await db.select().from(employees);
+    return await getDb().select().from(employees);
   }
   
   async createEmployee(employee: InsertEmployee): Promise<Employee> {
-    const [result] = await db.insert(employees).values(employee).returning();
+    const [result] = await getDb().insert(employees).values(employee).returning();
     return result;
   }
   
   async updateEmployee(id: number, employeeData: Partial<InsertEmployee>): Promise<Employee | undefined> {
-    const [updated] = await db
+    const [updated] = await getDb()
       .update(employees)
       .set(employeeData)
       .where(eq(employees.id, id))
@@ -164,27 +164,27 @@ export class DatabaseStorage implements IStorage {
   }
   
   async deleteEmployee(id: number): Promise<boolean> {
-    const result = await db.delete(employees).where(eq(employees.id, id));
+    const result = await getDb().delete(employees).where(eq(employees.id, id));
     return result.length > 0;
   }
   
   // Department Methods
   async getDepartment(id: number): Promise<Department | undefined> {
-    const result = await db.select().from(departments).where(eq(departments.id, id));
+    const result = await getDb().select().from(departments).where(eq(departments.id, id));
     return result[0];
   }
   
   async getAllDepartments(): Promise<Department[]> {
-    return await db.select().from(departments);
+    return await getDb().select().from(departments);
   }
   
   async createDepartment(department: InsertDepartment): Promise<Department> {
-    const [result] = await db.insert(departments).values(department).returning();
+    const [result] = await getDb().insert(departments).values(department).returning();
     return result;
   }
   
   async updateDepartment(id: number, departmentData: Partial<InsertDepartment>): Promise<Department | undefined> {
-    const [updated] = await db
+    const [updated] = await getDb()
       .update(departments)
       .set(departmentData)
       .where(eq(departments.id, id))
@@ -193,22 +193,22 @@ export class DatabaseStorage implements IStorage {
   }
   
   async deleteDepartment(id: number): Promise<boolean> {
-    const result = await db.delete(departments).where(eq(departments.id, id));
+    const result = await getDb().delete(departments).where(eq(departments.id, id));
     return result.length > 0;
   }
   
   // Attendance Methods
   async getAttendance(id: number): Promise<Attendance | undefined> {
-    const result = await db.select().from(attendance).where(eq(attendance.id, id));
+    const result = await getDb().select().from(attendance).where(eq(attendance.id, id));
     return result[0];
   }
   
   async getAttendanceByEmployee(employeeId: number): Promise<Attendance[]> {
-    return await db.select().from(attendance).where(eq(attendance.employeeId, employeeId));
+    return await getDb().select().from(attendance).where(eq(attendance.employeeId, employeeId));
   }
   
   async getAttendanceByDateRange(startDate: Date, endDate: Date): Promise<Attendance[]> {
-    return await db
+    return await getDb()
       .select()
       .from(attendance)
       .where(
@@ -220,12 +220,12 @@ export class DatabaseStorage implements IStorage {
   }
   
   async createAttendance(attendanceData: InsertAttendance): Promise<Attendance> {
-    const [result] = await db.insert(attendance).values(attendanceData).returning();
+    const [result] = await getDb().insert(attendance).values(attendanceData).returning();
     return result;
   }
   
   async updateAttendance(id: number, attendanceData: Partial<InsertAttendance>): Promise<Attendance | undefined> {
-    const [updated] = await db
+    const [updated] = await getDb()
       .update(attendance)
       .set(attendanceData)
       .where(eq(attendance.id, id))
@@ -234,27 +234,27 @@ export class DatabaseStorage implements IStorage {
   }
   
   async deleteAttendance(id: number): Promise<boolean> {
-    const result = await db.delete(attendance).where(eq(attendance.id, id));
+    const result = await getDb().delete(attendance).where(eq(attendance.id, id));
     return result.length > 0;
   }
   
   // PayrollPeriod Methods
   async getPayrollPeriod(id: number): Promise<PayrollPeriod | undefined> {
-    const result = await db.select().from(payrollPeriods).where(eq(payrollPeriods.id, id));
+    const result = await getDb().select().from(payrollPeriods).where(eq(payrollPeriods.id, id));
     return result[0];
   }
   
   async getAllPayrollPeriods(): Promise<PayrollPeriod[]> {
-    return await db.select().from(payrollPeriods);
+    return await getDb().select().from(payrollPeriods);
   }
   
   async createPayrollPeriod(period: InsertPayrollPeriod): Promise<PayrollPeriod> {
-    const [result] = await db.insert(payrollPeriods).values(period).returning();
+    const [result] = await getDb().insert(payrollPeriods).values(period).returning();
     return result;
   }
   
   async updatePayrollPeriod(id: number, periodData: Partial<InsertPayrollPeriod>): Promise<PayrollPeriod | undefined> {
-    const [updated] = await db
+    const [updated] = await getDb()
       .update(payrollPeriods)
       .set(periodData)
       .where(eq(payrollPeriods.id, id))
@@ -263,31 +263,31 @@ export class DatabaseStorage implements IStorage {
   }
   
   async deletePayrollPeriod(id: number): Promise<boolean> {
-    const result = await db.delete(payrollPeriods).where(eq(payrollPeriods.id, id));
+    const result = await getDb().delete(payrollPeriods).where(eq(payrollPeriods.id, id));
     return result.length > 0;
   }
   
   // PayrollItem Methods
   async getPayrollItem(id: number): Promise<PayrollItem | undefined> {
-    const result = await db.select().from(payrollItems).where(eq(payrollItems.id, id));
+    const result = await getDb().select().from(payrollItems).where(eq(payrollItems.id, id));
     return result[0];
   }
   
   async getPayrollItemsByPeriod(periodId: number): Promise<PayrollItem[]> {
-    return await db.select().from(payrollItems).where(eq(payrollItems.payrollPeriodId, periodId));
+    return await getDb().select().from(payrollItems).where(eq(payrollItems.payrollPeriodId, periodId));
   }
   
   async getPayrollItemsByEmployee(employeeId: number): Promise<PayrollItem[]> {
-    return await db.select().from(payrollItems).where(eq(payrollItems.employeeId, employeeId));
+    return await getDb().select().from(payrollItems).where(eq(payrollItems.employeeId, employeeId));
   }
   
   async createPayrollItem(item: InsertPayrollItem): Promise<PayrollItem> {
-    const [result] = await db.insert(payrollItems).values(item).returning();
+    const [result] = await getDb().insert(payrollItems).values(item).returning();
     return result;
   }
   
   async updatePayrollItem(id: number, itemData: Partial<InsertPayrollItem>): Promise<PayrollItem | undefined> {
-    const [updated] = await db
+    const [updated] = await getDb()
       .update(payrollItems)
       .set(itemData)
       .where(eq(payrollItems.id, id))
@@ -296,27 +296,27 @@ export class DatabaseStorage implements IStorage {
   }
   
   async deletePayrollItem(id: number): Promise<boolean> {
-    const result = await db.delete(payrollItems).where(eq(payrollItems.id, id));
+    const result = await getDb().delete(payrollItems).where(eq(payrollItems.id, id));
     return result.length > 0;
   }
   
   // DeductionType Methods
   async getDeductionType(id: number): Promise<DeductionType | undefined> {
-    const result = await db.select().from(deductionTypes).where(eq(deductionTypes.id, id));
+    const result = await getDb().select().from(deductionTypes).where(eq(deductionTypes.id, id));
     return result[0];
   }
   
   async getAllDeductionTypes(): Promise<DeductionType[]> {
-    return await db.select().from(deductionTypes);
+    return await getDb().select().from(deductionTypes);
   }
   
   async createDeductionType(type: InsertDeductionType): Promise<DeductionType> {
-    const [result] = await db.insert(deductionTypes).values(type).returning();
+    const [result] = await getDb().insert(deductionTypes).values(type).returning();
     return result;
   }
   
   async updateDeductionType(id: number, typeData: Partial<InsertDeductionType>): Promise<DeductionType | undefined> {
-    const [updated] = await db
+    const [updated] = await getDb()
       .update(deductionTypes)
       .set(typeData)
       .where(eq(deductionTypes.id, id))
@@ -325,27 +325,27 @@ export class DatabaseStorage implements IStorage {
   }
   
   async deleteDeductionType(id: number): Promise<boolean> {
-    const result = await db.delete(deductionTypes).where(eq(deductionTypes.id, id));
+    const result = await getDb().delete(deductionTypes).where(eq(deductionTypes.id, id));
     return result.length > 0;
   }
   
   // Deduction Methods
   async getDeduction(id: number): Promise<Deduction | undefined> {
-    const result = await db.select().from(deductions).where(eq(deductions.id, id));
+    const result = await getDb().select().from(deductions).where(eq(deductions.id, id));
     return result[0];
   }
   
   async getDeductionsByPayrollItem(payrollItemId: number): Promise<Deduction[]> {
-    return await db.select().from(deductions).where(eq(deductions.payrollItemId, payrollItemId));
+    return await getDb().select().from(deductions).where(eq(deductions.payrollItemId, payrollItemId));
   }
   
   async createDeduction(deduction: InsertDeduction): Promise<Deduction> {
-    const [result] = await db.insert(deductions).values(deduction).returning();
+    const [result] = await getDb().insert(deductions).values(deduction).returning();
     return result;
   }
   
   async updateDeduction(id: number, deductionData: Partial<InsertDeduction>): Promise<Deduction | undefined> {
-    const [updated] = await db
+    const [updated] = await getDb()
       .update(deductions)
       .set(deductionData)
       .where(eq(deductions.id, id))
@@ -354,27 +354,27 @@ export class DatabaseStorage implements IStorage {
   }
   
   async deleteDeduction(id: number): Promise<boolean> {
-    const result = await db.delete(deductions).where(eq(deductions.id, id));
+    const result = await getDb().delete(deductions).where(eq(deductions.id, id));
     return result.length > 0;
   }
   
   // AllowanceType Methods
   async getAllowanceType(id: number): Promise<AllowanceType | undefined> {
-    const result = await db.select().from(allowanceTypes).where(eq(allowanceTypes.id, id));
+    const result = await getDb().select().from(allowanceTypes).where(eq(allowanceTypes.id, id));
     return result[0];
   }
   
   async getAllAllowanceTypes(): Promise<AllowanceType[]> {
-    return await db.select().from(allowanceTypes);
+    return await getDb().select().from(allowanceTypes);
   }
   
   async createAllowanceType(type: InsertAllowanceType): Promise<AllowanceType> {
-    const [result] = await db.insert(allowanceTypes).values(type).returning();
+    const [result] = await getDb().insert(allowanceTypes).values(type).returning();
     return result;
   }
   
   async updateAllowanceType(id: number, typeData: Partial<InsertAllowanceType>): Promise<AllowanceType | undefined> {
-    const [updated] = await db
+    const [updated] = await getDb()
       .update(allowanceTypes)
       .set(typeData)
       .where(eq(allowanceTypes.id, id))
@@ -383,27 +383,27 @@ export class DatabaseStorage implements IStorage {
   }
   
   async deleteAllowanceType(id: number): Promise<boolean> {
-    const result = await db.delete(allowanceTypes).where(eq(allowanceTypes.id, id));
+    const result = await getDb().delete(allowanceTypes).where(eq(allowanceTypes.id, id));
     return result.length > 0;
   }
   
   // Allowance Methods
   async getAllowance(id: number): Promise<Allowance | undefined> {
-    const result = await db.select().from(allowances).where(eq(allowances.id, id));
+    const result = await getDb().select().from(allowances).where(eq(allowances.id, id));
     return result[0];
   }
   
   async getAllowancesByPayrollItem(payrollItemId: number): Promise<Allowance[]> {
-    return await db.select().from(allowances).where(eq(allowances.payrollItemId, payrollItemId));
+    return await getDb().select().from(allowances).where(eq(allowances.payrollItemId, payrollItemId));
   }
   
   async createAllowance(allowance: InsertAllowance): Promise<Allowance> {
-    const [result] = await db.insert(allowances).values(allowance).returning();
+    const [result] = await getDb().insert(allowances).values(allowance).returning();
     return result;
   }
   
   async updateAllowance(id: number, allowanceData: Partial<InsertAllowance>): Promise<Allowance | undefined> {
-    const [updated] = await db
+    const [updated] = await getDb()
       .update(allowances)
       .set(allowanceData)
       .where(eq(allowances.id, id))
@@ -412,27 +412,27 @@ export class DatabaseStorage implements IStorage {
   }
   
   async deleteAllowance(id: number): Promise<boolean> {
-    const result = await db.delete(allowances).where(eq(allowances.id, id));
+    const result = await getDb().delete(allowances).where(eq(allowances.id, id));
     return result.length > 0;
   }
   
   // Setting Methods
   async getSetting(key: string): Promise<Setting | undefined> {
-    const result = await db.select().from(settings).where(eq(settings.key, key));
+    const result = await getDb().select().from(settings).where(eq(settings.key, key));
     return result[0];
   }
   
   async getAllSettings(): Promise<Setting[]> {
-    return await db.select().from(settings);
+    return await getDb().select().from(settings);
   }
   
   async createSetting(setting: InsertSetting): Promise<Setting> {
-    const [result] = await db.insert(settings).values(setting).returning();
+    const [result] = await getDb().insert(settings).values(setting).returning();
     return result;
   }
   
   async updateSetting(id: number, settingData: Partial<InsertSetting>): Promise<Setting | undefined> {
-    const [updated] = await db
+    const [updated] = await getDb()
       .update(settings)
       .set(settingData)
       .where(eq(settings.id, id))
@@ -441,31 +441,31 @@ export class DatabaseStorage implements IStorage {
   }
   
   async deleteSetting(id: number): Promise<boolean> {
-    const result = await db.delete(settings).where(eq(settings.id, id));
+    const result = await getDb().delete(settings).where(eq(settings.id, id));
     return result.length > 0;
   }
 
   // Approval Methods
   async getApproval(id: number): Promise<Approval | undefined> {
-    const result = await db.select().from(approvals).where(eq(approvals.id, id));
+    const result = await getDb().select().from(approvals).where(eq(approvals.id, id));
     return result[0];
   }
   
   async getApprovalsByEmployee(employeeId: number): Promise<Approval[]> {
-    return await db.select().from(approvals).where(eq(approvals.employeeId, employeeId));
+    return await getDb().select().from(approvals).where(eq(approvals.employeeId, employeeId));
   }
   
   async getPendingApprovals(): Promise<Approval[]> {
-    return await db.select().from(approvals).where(eq(approvals.status, 'pending'));
+    return await getDb().select().from(approvals).where(eq(approvals.status, 'pending'));
   }
   
   async createApproval(approval: InsertApproval): Promise<Approval> {
-    const [result] = await db.insert(approvals).values(approval).returning();
+    const [result] = await getDb().insert(approvals).values(approval).returning();
     return result;
   }
   
   async updateApproval(id: number, approvalData: Partial<InsertApproval>): Promise<Approval | undefined> {
-    const [updated] = await db
+    const [updated] = await getDb()
       .update(approvals)
       .set(approvalData)
       .where(eq(approvals.id, id))
@@ -474,22 +474,22 @@ export class DatabaseStorage implements IStorage {
   }
   
   async deleteApproval(id: number): Promise<boolean> {
-    const result = await db.delete(approvals).where(eq(approvals.id, id));
+    const result = await getDb().delete(approvals).where(eq(approvals.id, id));
     return result.length > 0;
   }
   
   // Activity Methods
   async getActivity(id: number): Promise<Activity | undefined> {
-    const result = await db.select().from(activities).where(eq(activities.id, id));
+    const result = await getDb().select().from(activities).where(eq(activities.id, id));
     return result[0];
   }
   
   async getAllActivities(): Promise<Activity[]> {
-    return await db.select().from(activities);
+    return await getDb().select().from(activities);
   }
   
   async getRecentActivities(limit: number): Promise<Activity[]> {
-    return await db
+    return await getDb()
       .select()
       .from(activities)
       .orderBy(desc(activities.timestamp))
@@ -497,7 +497,7 @@ export class DatabaseStorage implements IStorage {
   }
   
   async createActivity(activity: InsertActivity): Promise<Activity> {
-    const [result] = await db.insert(activities).values(activity).returning();
+    const [result] = await getDb().insert(activities).values(activity).returning();
     return result;
   }
 }

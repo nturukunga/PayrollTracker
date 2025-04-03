@@ -58,9 +58,6 @@ const logActivity = async (action: string, userId?: number, entityType?: string,
 export async function registerRoutes(app: Express): Promise<Server> {
   const router = express.Router();
 
-  // Set up authentication with Passport.js
-  setupAuth(app);
-
   // User Routes - Note: Authentication Routes are now handled by setupAuth in auth.ts
   
   router.put('/users/current', authenticate, async (req: Request, res: Response, next: NextFunction) => {

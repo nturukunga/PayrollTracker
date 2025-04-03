@@ -47,7 +47,19 @@ export async function hashPassword(password: string): Promise<string> {
  * Compare supplied password with stored password
  */
 export async function comparePasswords(supplied: string, stored: string): Promise<boolean> {
+  // If stored password doesn't have the expected format, it may be a plaintext password from old data
+  if (!stored.includes('.')) {
+    return supplied === stored; // Direct comparison for legacy passwords
+  }
+  
   const [hashed, salt] = stored.split(".");
+  
+  // Ensure we have both hash and salt
+  if (!hashed || !salt) {
+    console.error("Invalid password format:", { hashed: !!hashed, salt: !!salt });
+    return false;
+  }
+  
   const hashedBuf = Buffer.from(hashed, "hex");
   const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
   return timingSafeEqual(hashedBuf, suppliedBuf);

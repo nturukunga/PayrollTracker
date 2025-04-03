@@ -32,5 +32,20 @@ export const createPostgresConnection = async () => {
   }
 };
 
-// Export a connection instance
-export const db = await createPostgresConnection();
+// Create a connection function to be called at application startup
+let dbInstance: ReturnType<typeof drizzle>;
+
+export async function initDatabase() {
+  if (!dbInstance) {
+    dbInstance = await createPostgresConnection();
+  }
+  return dbInstance;
+}
+
+// Export a function to get the db instance
+export function getDb() {
+  if (!dbInstance) {
+    throw new Error("Database not initialized. Call initDatabase() first.");
+  }
+  return dbInstance;
+}
