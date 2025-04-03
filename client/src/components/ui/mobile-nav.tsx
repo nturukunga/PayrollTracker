@@ -65,6 +65,11 @@ export function MobileNav({ className }: MobileNavProps) {
       icon: Settings,
       href: "/settings",
     },
+    {
+      label: "Support",
+      icon: HelpCircle,
+      href: "/contact-support",
+    },
   ];
   
   const moreItems = [

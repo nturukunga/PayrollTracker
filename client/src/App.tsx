@@ -14,6 +14,7 @@ import Reports from "@/pages/reports";
 import Settings from "@/pages/settings";
 import Profile from "@/pages/profile";
 import AuthPage from "@/pages/auth-page";
+import ContactSupport from "@/pages/contact-support";
 
 // Auth hook
 import { AuthProvider } from "@/hooks/use-auth";
@@ -41,6 +42,7 @@ function Router() {
       <ProtectedRoute path="/reports" component={Reports} />
       <ProtectedRoute path="/settings" component={Settings} />
       <ProtectedRoute path="/profile" component={Profile} />
+      <ProtectedRoute path="/contact-support" component={ContactSupport} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -58,6 +58,11 @@ export function Sidebar({ className }: SidebarProps) {
       icon: Settings,
       href: "/settings",
     },
+    {
+      label: "Contact Support",
+      icon: HelpCircle,
+      href: "/contact-support",
+    },
   ];
   
   const filteredNavItems = searchQuery.length > 0
@@ -112,18 +117,13 @@ export function Sidebar({ className }: SidebarProps) {
             <span>Profile</span>
           </Link>
           
-          <div 
+          <Link
+            href="/contact-support"
             className="flex items-center px-4 py-3 text-neutral-500 hover:bg-blue-50 cursor-pointer"
-            onClick={() => {
-              toast({
-                title: "Help & Support",
-                description: "Contact administrator for assistance at support@payrollpro.com",
-              });
-            }}
           >
             <HelpCircle className="mr-3 h-5 w-5" />
             <span>Help & Support</span>
-          </div>
+          </Link>
           
           <div 
             className="flex items-center px-4 py-3 text-neutral-500 hover:bg-blue-50 cursor-pointer"
