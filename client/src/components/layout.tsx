@@ -17,6 +17,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { apiRequest } from "@/lib/queryClient";
 import { cn } from "@/lib/utils";
 import { type User as UserType } from "@/lib/types";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 
 interface LayoutProps {
   children: ReactNode;
@@ -66,6 +67,8 @@ export function Layout({ children, title, actions }: LayoutProps) {
           <div className="flex items-center space-x-4">
             {!isLoading && user && (
               <>
+                <ThemeSwitcher />
+                
                 <Button variant="ghost" size="icon" className="text-white">
                   <Bell className="h-5 w-5" />
                 </Button>

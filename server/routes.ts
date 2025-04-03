@@ -1006,6 +1006,35 @@ ON DUPLICATE KEY UPDATE id = id;
     res.send(sql);
   });
 
+  // Theme API endpoint
+  router.post('/theme', (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { primary, variant, appearance, name } = req.body;
+      
+      if (!primary || !variant || !appearance) {
+        throw new ApiError('Missing required theme parameters', 400);
+      }
+      
+      // In a production app, we might save this to the user's preferences in the database
+      // For now, we just return success
+      
+      if (req.session.userId) {
+        // If user is logged in, log this activity
+        logActivity(
+          'update', 
+          req.session.userId, 
+          'theme', 
+          null, 
+          `Updated theme to: ${name || 'Custom'}`
+        );
+      }
+      
+      res.json({ success: true, message: 'Theme updated' });
+    } catch (error) {
+      next(error);
+    }
+  });
+
   // Register the router with prefix
   app.use('/api', router);
 
