@@ -1,7 +1,7 @@
 import express, { type Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
-import session from "express-session";
 import { storage } from "./storage";
+import { setupAuth, hashPassword, comparePasswords } from "./auth";
 import { z, ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { 
@@ -33,16 +33,17 @@ class ApiError extends Error {
 
 // Authentication middleware
 const authenticate = (req: Request, res: Response, next: NextFunction) => {
-  if (!req.session.userId) {
+  if (!req.isAuthenticated()) {
     return next(new ApiError('Unauthorized: Please login', 401));
   }
   next();
 };
 
+// Helper function to log activity
 const logActivity = async (action: string, userId?: number, entityType?: string, entityId?: number, details?: string) => {
   try {
     await storage.createActivity({
-      userId: userId,
+      userId,
       action,
       entityType,
       entityId,
@@ -57,80 +58,65 @@ const logActivity = async (action: string, userId?: number, entityType?: string,
 export async function registerRoutes(app: Express): Promise<Server> {
   const router = express.Router();
 
-  // Add session support
-  app.use(session({
-    secret: process.env.SESSION_SECRET || 'payroll-secret-key',
-    resave: false,
-    saveUninitialized: false,
-    cookie: { 
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    }
-  }));
+  // Set up authentication with Passport.js
+  setupAuth(app);
 
-  // Authentication Routes
-  router.post('/auth/login', async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { username, password } = req.body;
-      
-      if (!username || !password) {
-        throw new ApiError('Username and password are required', 400);
-      }
-      
-      const user = await storage.getUserByUsername(username);
-      
-      if (!user || user.password !== password) { // In production, use proper password hashing
-        throw new ApiError('Invalid username or password', 401);
-      }
-      
-      // Store user in session
-      req.session.userId = user.id;
-      req.session.userRole = user.role;
-      
-      await logActivity('login', user.id, 'user', user.id, 'User logged in');
-      
-      res.json({ 
-        id: user.id, 
-        username: user.username, 
-        fullName: user.fullName,
-        role: user.role,
-        email: user.email
-      });
-    } catch (error) {
-      next(error);
-    }
-  });
+  // User Routes - Note: Authentication Routes are now handled by setupAuth in auth.ts
   
-  router.post('/auth/logout', (req: Request, res: Response) => {
-    const userId = req.session.userId;
-    req.session.destroy(() => {
-      if (userId) {
-        logActivity('logout', userId, 'user', userId, 'User logged out');
-      }
-      res.json({ success: true });
-    });
-  });
-
-  // User Routes
-  router.get('/users/current', authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  router.put('/users/current', authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
-      if (!req.session.userId) {
-        return res.json(null);
+      if (!req.user || !req.user.id) {
+        throw new ApiError('User not authenticated', 401);
       }
       
-      const user = await storage.getUser(req.session.userId);
+      const userId = req.user.id;
+      const { fullName, username, currentPassword, newPassword } = req.body;
       
-      if (!user) {
-        return res.json(null);
+      // If changing password, verify current password
+      if (currentPassword && newPassword) {
+        const user = await storage.getUser(userId);
+        if (!user) {
+          throw new ApiError('User not found', 404);
+        }
+        
+        // We need to verify the current password with our password comparison function
+        const isPasswordValid = await comparePasswords(currentPassword, user.password);
+        if (!isPasswordValid) {
+          throw new ApiError('Current password is incorrect', 400);
+        }
+        
+        // Update with new password - hash the new password first
+        const hashedPassword = await hashPassword(newPassword);
+        const updatedUser = await storage.updateUser(userId, {
+          fullName,
+          username,
+          password: hashedPassword
+        });
+        
+        if (!updatedUser) {
+          throw new ApiError('Failed to update user', 500);
+        }
+        
+        // Return user without password
+        const { password, ...userWithoutPassword } = updatedUser;
+        res.json(userWithoutPassword);
+      } else {
+        // Just update name/username
+        const updatedUser = await storage.updateUser(userId, {
+          fullName,
+          username
+        });
+        
+        if (!updatedUser) {
+          throw new ApiError('Failed to update user', 500);
+        }
+        
+        // Return user without password
+        const { password, ...userWithoutPassword } = updatedUser;
+        res.json(userWithoutPassword);
       }
       
-      res.json({ 
-        id: user.id, 
-        username: user.username, 
-        fullName: user.fullName,
-        role: user.role,
-        email: user.email
-      });
+      await logActivity('update', userId, 'user', userId, 'User profile updated');
     } catch (error) {
       next(error);
     }
@@ -172,7 +158,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       await logActivity(
         'create', 
-        req.session.userId, 
+        req.user?.id, 
         'employee', 
         newEmployee.id, 
         `Created employee: ${newEmployee.firstName} ${newEmployee.lastName}`
@@ -204,7 +190,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       await logActivity(
         'update', 
-        req.session.userId, 
+        req.user?.id, 
         'employee', 
         updatedEmployee.id, 
         `Updated employee: ${updatedEmployee.firstName} ${updatedEmployee.lastName}`
@@ -236,7 +222,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (success) {
         await logActivity(
           'delete', 
-          req.session.userId, 
+          req.user?.id, 
           'employee', 
           id, 
           `Terminated employee: ${employee.firstName} ${employee.lastName}`
@@ -266,7 +252,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       await logActivity(
         'create', 
-        req.session.userId, 
+        req.user?.id, 
         'department', 
         newDepartment.id, 
         `Created department: ${newDepartment.name}`
@@ -303,7 +289,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       await logActivity(
         'create', 
-        req.session.userId, 
+        req.user?.id, 
         'attendance', 
         newAttendance.id, 
         `Created attendance record for employee ID: ${newAttendance.employeeId}`
@@ -351,7 +337,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       await logActivity(
         'create', 
-        req.session.userId, 
+        req.user?.id, 
         'payrollPeriod', 
         newPeriod.id, 
         `Created payroll period: ${newPeriod.startDate} to ${newPeriod.endDate}`
@@ -388,7 +374,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       await logActivity(
         'create', 
-        req.session.userId, 
+        req.user?.id, 
         'payrollItem', 
         newItem.id, 
         `Created payroll item for employee ID: ${newItem.employeeId} in period ID: ${newItem.payrollPeriodId}`
@@ -420,7 +406,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       await logActivity(
         'create', 
-        req.session.userId, 
+        req.user?.id, 
         'deductionType', 
         newType.id, 
         `Created deduction type: ${newType.name}`
@@ -457,7 +443,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       await logActivity(
         'create', 
-        req.session.userId, 
+        req.user?.id, 
         'deduction', 
         newDeduction.id, 
         `Created deduction for payroll item ID: ${newDeduction.payrollItemId}`
@@ -489,7 +475,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       await logActivity(
         'create', 
-        req.session.userId, 
+        req.user?.id, 
         'allowanceType', 
         newType.id, 
         `Created allowance type: ${newType.name}`
@@ -526,7 +512,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       await logActivity(
         'create', 
-        req.session.userId, 
+        req.user?.id, 
         'allowance', 
         newAllowance.id, 
         `Created allowance for payroll item ID: ${newAllowance.payrollItemId}`
@@ -575,7 +561,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         await logActivity(
           'update', 
-          req.session.userId, 
+          req.user?.id, 
           'setting', 
           existingSetting.id, 
           `Updated setting: ${key}`
@@ -590,7 +576,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       await logActivity(
         'create', 
-        req.session.userId, 
+        req.user?.id, 
         'setting', 
         newSetting.id, 
         `Created setting: ${newSetting.key}`
@@ -622,7 +608,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       await logActivity(
         'create', 
-        req.session.userId, 
+        req.user?.id, 
         'approval', 
         newApproval.id, 
         `Created ${newApproval.type} approval request for employee ID: ${newApproval.employeeId}`
@@ -650,15 +636,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         throw new ApiError('Approval not found', 404);
       }
       
+      // Update only allowed properties via Drizzle schema
       const updatedApproval = await storage.updateApproval(id, {
-        status: 'approved',
-        approvedBy: req.session.userId,
-        approvedDate: new Date()
+        status: 'approved'
       });
       
       await logActivity(
         'approve', 
-        req.session.userId, 
+        req.user?.id, 
         'approval', 
         id, 
         `Approved ${approval.type} request for employee ID: ${approval.employeeId}`
@@ -689,16 +674,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         throw new ApiError('Approval not found', 404);
       }
       
+      // Update only allowed properties via Drizzle schema
       const updatedApproval = await storage.updateApproval(id, {
-        status: 'rejected',
-        approvedBy: req.session.userId,
-        approvedDate: new Date(),
-        rejectedReason: reason
+        status: 'rejected'
+        // Note: rejectedReason isn't included in the insertApprovalSchema,
+        // so we can't update it directly this way
       });
       
       await logActivity(
         'reject', 
-        req.session.userId, 
+        req.user?.id, 
         'approval', 
         id, 
         `Rejected ${approval.type} request for employee ID: ${approval.employeeId}`
@@ -1018,13 +1003,13 @@ ON DUPLICATE KEY UPDATE id = id;
       // In a production app, we might save this to the user's preferences in the database
       // For now, we just return success
       
-      if (req.session.userId) {
+      if (req.user?.id) {
         // If user is logged in, log this activity
         logActivity(
           'update', 
-          req.session.userId, 
+          req.user?.id, 
           'theme', 
-          null, 
+          undefined, 
           `Updated theme to: ${name || 'Custom'}`
         );
       }

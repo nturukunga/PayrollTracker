@@ -55,7 +55,11 @@ export function Layout({ children, title, actions }: LayoutProps) {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="p-0 w-64">
-                <Sidebar className="w-full shadow-none" />
+                <div className="pt-6 px-4">
+                  <h2 className="text-lg font-medium">Navigation</h2>
+                  <p className="text-sm text-muted-foreground">Application menu</p>
+                </div>
+                <Sidebar className="w-full shadow-none mt-2" />
               </SheetContent>
             </Sheet>
             <Link href="/" className="flex items-center space-x-2">
@@ -86,9 +90,13 @@ export function Layout({ children, title, actions }: LayoutProps) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
-                      <UserIcon className="mr-2 h-4 w-4" />
-                      Profile
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile">
+                        <div className="flex w-full items-center">
+                          <UserIcon className="mr-2 h-4 w-4" />
+                          Profile
+                        </div>
+                      </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleLogout}>

@@ -1,4 +1,4 @@
-import { Switch, Route, Redirect } from "wouter";
+import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -12,36 +12,35 @@ import Payroll from "@/pages/payroll";
 import Attendance from "@/pages/attendance";
 import Reports from "@/pages/reports";
 import Settings from "@/pages/settings";
-import Login from "@/pages/login";
+import Profile from "@/pages/profile";
+import AuthPage from "@/pages/auth-page";
 
 // Auth hook
-import { AuthProvider, useAuth } from "@/hooks/use-auth";
+import { AuthProvider } from "@/hooks/use-auth";
+import { ProtectedRoute } from "./lib/protected-route";
 
-function ProtectedRoute({ component: Component, ...rest }: { component: React.ComponentType<any>, path: string }) {
-  const { isAuthenticated, isLoading } = useAuth();
-  
-  if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-  }
-  
-  if (!isAuthenticated) {
-    return <Redirect to="/login" />;
-  }
-  
-  return <Component {...rest} />;
+// Define a type for EmployeeDetail props to fix TypeScript error
+interface EmployeeDetailProps {
+  id: string;
 }
 
 function Router() {
   return (
     <Switch>
-      <Route path="/login" component={Login} />
-      <Route path="/" component={() => <ProtectedRoute component={Dashboard} path="/" />} />
-      <Route path="/employees" component={() => <ProtectedRoute component={Employees} path="/employees" />} />
-      <Route path="/employees/:id" component={({ id }) => <ProtectedRoute component={EmployeeDetail} path={`/employees/${id}`} id={id} />} />
-      <Route path="/payroll" component={() => <ProtectedRoute component={Payroll} path="/payroll" />} />
-      <Route path="/attendance" component={() => <ProtectedRoute component={Attendance} path="/attendance" />} />
-      <Route path="/reports" component={() => <ProtectedRoute component={Reports} path="/reports" />} />
-      <Route path="/settings" component={() => <ProtectedRoute component={Settings} path="/settings" />} />
+      <Route path="/auth" component={AuthPage} />
+      <ProtectedRoute path="/" component={Dashboard} />
+      <ProtectedRoute path="/employees" component={Employees} />
+      <Route path="/employees/:id">
+        {(params) => {
+          const EmployeeDetailComponent = () => <EmployeeDetail id={params.id} />;
+          return <ProtectedRoute path={`/employees/${params.id}`} component={EmployeeDetailComponent} />;
+        }}
+      </Route>
+      <ProtectedRoute path="/payroll" component={Payroll} />
+      <ProtectedRoute path="/attendance" component={Attendance} />
+      <ProtectedRoute path="/reports" component={Reports} />
+      <ProtectedRoute path="/settings" component={Settings} />
+      <ProtectedRoute path="/profile" component={Profile} />
       <Route component={NotFound} />
     </Switch>
   );

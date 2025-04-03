@@ -1,6 +1,14 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
+import pg from 'pg';
 import { log } from "./vite";
+
+const { Pool } = pg;
+
+// Create a pg Pool for session store
+export const pool = new Pool({
+  connectionString: process.env.DATABASE_URL
+});
 
 // Create PostgreSQL connection using environment variables
 export const createPostgresConnection = async () => {
