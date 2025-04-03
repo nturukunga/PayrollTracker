@@ -13,6 +13,7 @@ import {
   LogOut,
   HelpCircle
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 import {
   Sheet,
@@ -31,6 +32,7 @@ export function MobileNav({ className }: MobileNavProps) {
   const [location] = useLocation();
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const { logoutMutation } = useAuth();
+  const { toast } = useToast();
   
   const navItems = [
     {
@@ -80,7 +82,12 @@ export function MobileNav({ className }: MobileNavProps) {
     {
       label: "Help & Support",
       icon: HelpCircle,
-      href: "#",
+      onClick: () => {
+        toast({
+          title: "Help & Support",
+          description: "Contact administrator for assistance at support@payrollpro.com",
+        });
+      },
     },
     {
       label: "Logout",
