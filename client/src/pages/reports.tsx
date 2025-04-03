@@ -23,7 +23,6 @@ import {
   Calendar as CalendarIcon,
   Download,
   FileSpreadsheet,
-  FilePdf,
   FileText,
   ChevronDown,
 } from "lucide-react";
@@ -90,7 +89,7 @@ export default function Reports() {
               Export to Excel
             </Button>
             <Button variant="outline" className="flex items-center">
-              <FilePdf className="mr-2 h-4 w-4" />
+              <FileText className="mr-2 h-4 w-4" />
               Export to PDF
             </Button>
           </div>
