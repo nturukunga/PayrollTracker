@@ -58,13 +58,38 @@ export function AttendanceForm({ isOpen, onClose, attendanceId }: AttendanceForm
   const isEditing = !!attendanceId;
 
   // Fetch employees for select dropdown
-  const { data: employees = [] } = useQuery({ 
+  const { data: employees = [] } = useQuery<{
+    status: string;
+    address: string | null;
+    id: number;
+    employeeCode: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string | null;
+    position: string;
+    department: string;
+    dateHired: string;
+    bankAccountNumber: string | null;
+    dateTerminated?: string | null;
+    basicSalary?: number;
+    hourlyRate?: number;
+    taxId?: string;
+    bankName?: string;
+  }[]>({ 
     queryKey: ['/api/employees'],
     enabled: isOpen
   });
 
   // Fetch attendance data if editing
-  const { data: attendance, isLoading: isLoadingAttendance } = useQuery({
+  const { data: attendance, isLoading: isLoadingAttendance } = useQuery<{
+    employeeId: number;
+    date: string;
+    timeIn: string;
+    timeOut?: string | null;
+    status: string;
+    notes?: string;
+  }>({
     queryKey: ['/api/attendance', attendanceId],
     enabled: isOpen && isEditing
   });
@@ -164,7 +189,13 @@ export function AttendanceForm({ isOpen, onClose, attendanceId }: AttendanceForm
     }
   };
 
-  const employeeOptions = formatEmployeesToOptions(employees);
+  const safeEmployees = employees.map((employee) => ({
+    ...employee,
+    dateTerminated: employee.dateTerminated === undefined ? null : employee.dateTerminated,
+    basicSalary: employee.basicSalary ?? 0,
+    hourlyRate: employee.hourlyRate ?? 0,
+  }));
+  const employeeOptions = formatEmployeesToOptions(safeEmployees);
   const statusOptions = [
     { value: "present", label: "Present" },
     { value: "absent", label: "Absent" },

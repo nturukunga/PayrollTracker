@@ -33,28 +33,39 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
+import { FormProvider, useForm } from "react-hook-form";
+
+type PayrollPeriod = {
+  id: number;
+  startDate: string;
+  endDate: string;
+  processedDate?: string;
+  status: string;
+};
 
 export default function Payroll() {
   const [activeTab, setActiveTab] = useState("periods");
   const [isPayrollFormOpen, setIsPayrollFormOpen] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState<number | null>(null);
   const [selectedPayrollItem, setSelectedPayrollItem] = useState<number | null>(null);
+  
+  const payrollFormMethods = useForm();
 
   const { toast } = useToast();
 
   // Fetch payroll periods
-  const { data: payrollPeriods = [], isLoading: isLoadingPeriods } = useQuery({
+  const { data: payrollPeriods = [] as PayrollPeriod[], isLoading: isLoadingPeriods } = useQuery<PayrollPeriod[]>({
     queryKey: ['/api/payroll-periods'],
   });
 
   // Fetch payroll items for selected period
-  const { data: payrollItems = [], isLoading: isLoadingItems } = useQuery({
+  const { data: payrollItems = [], isLoading: isLoadingItems } = useQuery<any[]>({
     queryKey: ['/api/payroll-items/period', selectedPeriod],
     enabled: !!selectedPeriod,
   });
 
   // Fetch employees
-  const { data: employees = [] } = useQuery({
+  const { data: employees = [] } = useQuery<any[]>({
     queryKey: ['/api/employees'],
   });
 
@@ -62,7 +73,10 @@ export default function Payroll() {
   const payslipData = payrollItems.length > 0 && employees.length > 0 ? {
     employee: employees.find(e => e.id === payrollItems[0].employeeId) || employees[0],
     payrollItem: payrollItems[0],
-    period: payrollPeriods.find(p => p.id === payrollItems[0].payrollPeriodId) || payrollPeriods[0],
+    period: (() => {
+      const periodData = payrollPeriods.find(p => p.id === payrollItems[0].payrollPeriodId) || payrollPeriods[0];
+      return { ...periodData, processedDate: periodData.processedDate ? new Date(periodData.processedDate) : null };
+    })(),
     deductions: [
       { type: "Income Tax", amount: Number(payrollItems[0].taxAmount), isPercentage: true },
       { type: "Health Insurance", amount: Number(payrollItems[0].basicSalary) * 0.03, isPercentage: true },
@@ -99,7 +113,7 @@ export default function Payroll() {
       header: "Status",
       cell: ({ row }) => (
         <Badge variant={
-          row.original.status === 'processed' ? 'success' :
+          row.original.status === 'processed' ? 'destructive' :
           row.original.status === 'draft' ? 'secondary' : 'default'
         }>
           {row.original.status.charAt(0).toUpperCase() + row.original.status.slice(1)}
@@ -176,7 +190,7 @@ export default function Payroll() {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => (
-        <Badge variant={row.original.status === 'paid' ? 'success' : 'default'}>
+        <Badge variant={row.original.status === 'paid' ? 'secondary' : 'default'}>
           {row.original.status.charAt(0).toUpperCase() + row.original.status.slice(1)}
         </Badge>
       ),
@@ -262,7 +276,7 @@ export default function Payroll() {
                     }
                   </h3>
                   <Badge variant={
-                    selectedPeriod && payrollPeriods.find(p => p.id === selectedPeriod)?.status === 'processed' ? 'success' : 'default'
+                    selectedPeriod && payrollPeriods.find(p => p.id === selectedPeriod)?.status === 'processed' ? 'secondary' : 'default'
                   }>
                     {selectedPeriod && payrollPeriods.find(p => p.id === selectedPeriod)?.status.charAt(0).toUpperCase() + payrollPeriods.find(p => p.id === selectedPeriod)!.status.slice(1)}
                   </Badge>
