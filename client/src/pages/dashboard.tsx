@@ -31,7 +31,6 @@ import { Badge } from "@/components/ui/badge";
 export default function Dashboard() {
   const [isPayrollFormOpen, setIsPayrollFormOpen] = useState(false);
   
-  // Fetch dashboard data
   const { data: employees = [] } = useQuery({
     queryKey: ['/api/employees'],
   });
@@ -54,13 +53,11 @@ export default function Dashboard() {
     approvalIncrease: '+0',
   });
 
-  // Process employees data to add initials
   const employeesWithDetails: EmployeeWithDetails[] = employees.map(employee => ({
     ...employee,
     initials: getInitials(employee.firstName, employee.lastName),
   }));
 
-  // Create employee table columns
   const columns: ColumnDef<EmployeeWithDetails>[] = [
     {
       accessorKey: "employee",
@@ -151,7 +148,6 @@ export default function Dashboard() {
       }));
     }
 
-    // Mock data for total payroll
     setMetrics(prev => ({
       ...prev,
       payrollProcessed: formatCurrency(employees.reduce((sum, emp) => sum + Number(emp.basicSalary), 0)),

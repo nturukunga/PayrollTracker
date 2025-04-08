@@ -14,28 +14,24 @@ import {
 } from "@shared/schema";
 
 export interface IStorage {
-  // User Methods
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, user: Partial<InsertUser>): Promise<User | undefined>;
   deleteUser(id: number): Promise<boolean>;
   
-  // Employee Methods
   getEmployee(id: number): Promise<Employee | undefined>;
   getAllEmployees(): Promise<Employee[]>;
   createEmployee(employee: InsertEmployee): Promise<Employee>;
   updateEmployee(id: number, employee: Partial<InsertEmployee>): Promise<Employee | undefined>;
   deleteEmployee(id: number): Promise<boolean>;
   
-  // Department Methods
   getDepartment(id: number): Promise<Department | undefined>;
   getAllDepartments(): Promise<Department[]>;
   createDepartment(department: InsertDepartment): Promise<Department>;
   updateDepartment(id: number, department: Partial<InsertDepartment>): Promise<Department | undefined>;
   deleteDepartment(id: number): Promise<boolean>;
   
-  // Attendance Methods
   getAttendance(id: number): Promise<Attendance | undefined>;
   getAttendanceByEmployee(employeeId: number): Promise<Attendance[]>;
   getAttendanceByDateRange(startDate: Date, endDate: Date): Promise<Attendance[]>;
@@ -43,14 +39,12 @@ export interface IStorage {
   updateAttendance(id: number, attendance: Partial<InsertAttendance>): Promise<Attendance | undefined>;
   deleteAttendance(id: number): Promise<boolean>;
   
-  // PayrollPeriod Methods
   getPayrollPeriod(id: number): Promise<PayrollPeriod | undefined>;
   getAllPayrollPeriods(): Promise<PayrollPeriod[]>;
   createPayrollPeriod(period: InsertPayrollPeriod): Promise<PayrollPeriod>;
   updatePayrollPeriod(id: number, period: Partial<InsertPayrollPeriod>): Promise<PayrollPeriod | undefined>;
   deletePayrollPeriod(id: number): Promise<boolean>;
   
-  // PayrollItem Methods
   getPayrollItem(id: number): Promise<PayrollItem | undefined>;
   getPayrollItemsByPeriod(periodId: number): Promise<PayrollItem[]>;
   getPayrollItemsByEmployee(employeeId: number): Promise<PayrollItem[]>;
@@ -58,42 +52,37 @@ export interface IStorage {
   updatePayrollItem(id: number, item: Partial<InsertPayrollItem>): Promise<PayrollItem | undefined>;
   deletePayrollItem(id: number): Promise<boolean>;
   
-  // DeductionType Methods
   getDeductionType(id: number): Promise<DeductionType | undefined>;
   getAllDeductionTypes(): Promise<DeductionType[]>;
   createDeductionType(type: InsertDeductionType): Promise<DeductionType>;
   updateDeductionType(id: number, type: Partial<InsertDeductionType>): Promise<DeductionType | undefined>;
   deleteDeductionType(id: number): Promise<boolean>;
   
-  // Deduction Methods
   getDeduction(id: number): Promise<Deduction | undefined>;
   getDeductionsByPayrollItem(payrollItemId: number): Promise<Deduction[]>;
   createDeduction(deduction: InsertDeduction): Promise<Deduction>;
   updateDeduction(id: number, deduction: Partial<InsertDeduction>): Promise<Deduction | undefined>;
   deleteDeduction(id: number): Promise<boolean>;
   
-  // AllowanceType Methods
+
   getAllowanceType(id: number): Promise<AllowanceType | undefined>;
   getAllAllowanceTypes(): Promise<AllowanceType[]>;
   createAllowanceType(type: InsertAllowanceType): Promise<AllowanceType>;
   updateAllowanceType(id: number, type: Partial<InsertAllowanceType>): Promise<AllowanceType | undefined>;
   deleteAllowanceType(id: number): Promise<boolean>;
   
-  // Allowance Methods
   getAllowance(id: number): Promise<Allowance | undefined>;
   getAllowancesByPayrollItem(payrollItemId: number): Promise<Allowance[]>;
   createAllowance(allowance: InsertAllowance): Promise<Allowance>;
   updateAllowance(id: number, allowance: Partial<InsertAllowance>): Promise<Allowance | undefined>;
   deleteAllowance(id: number): Promise<boolean>;
   
-  // Setting Methods
   getSetting(key: string): Promise<Setting | undefined>;
   getAllSettings(): Promise<Setting[]>;
   createSetting(setting: InsertSetting): Promise<Setting>;
   updateSetting(id: number, setting: Partial<InsertSetting>): Promise<Setting | undefined>;
   deleteSetting(id: number): Promise<boolean>;
 
-  // Approval Methods
   getApproval(id: number): Promise<Approval | undefined>;
   getApprovalsByEmployee(employeeId: number): Promise<Approval[]>;
   getPendingApprovals(): Promise<Approval[]>;
@@ -101,7 +90,6 @@ export interface IStorage {
   updateApproval(id: number, approval: Partial<InsertApproval>): Promise<Approval | undefined>;
   deleteApproval(id: number): Promise<boolean>;
   
-  // Activity Methods
   getActivity(id: number): Promise<Activity | undefined>;
   getAllActivities(): Promise<Activity[]>;
   getRecentActivities(limit: number): Promise<Activity[]>;
@@ -109,7 +97,7 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
-  // User Methods
+
   async getUser(id: number): Promise<User | undefined> {
     const result = await getDb().select().from(users).where(eq(users.id, id));
     return result[0];
@@ -139,7 +127,6 @@ export class DatabaseStorage implements IStorage {
     return result.length > 0;
   }
   
-  // Employee Methods
   async getEmployee(id: number): Promise<Employee | undefined> {
     const result = await getDb().select().from(employees).where(eq(employees.id, id));
     return result[0];
@@ -168,7 +155,6 @@ export class DatabaseStorage implements IStorage {
     return result.length > 0;
   }
   
-  // Department Methods
   async getDepartment(id: number): Promise<Department | undefined> {
     const result = await getDb().select().from(departments).where(eq(departments.id, id));
     return result[0];
@@ -197,7 +183,6 @@ export class DatabaseStorage implements IStorage {
     return result.length > 0;
   }
   
-  // Attendance Methods
   async getAttendance(id: number): Promise<Attendance | undefined> {
     const result = await getDb().select().from(attendance).where(eq(attendance.id, id));
     return result[0];
@@ -238,7 +223,6 @@ export class DatabaseStorage implements IStorage {
     return result.length > 0;
   }
   
-  // PayrollPeriod Methods
   async getPayrollPeriod(id: number): Promise<PayrollPeriod | undefined> {
     const result = await getDb().select().from(payrollPeriods).where(eq(payrollPeriods.id, id));
     return result[0];
@@ -267,7 +251,6 @@ export class DatabaseStorage implements IStorage {
     return result.length > 0;
   }
   
-  // PayrollItem Methods
   async getPayrollItem(id: number): Promise<PayrollItem | undefined> {
     const result = await getDb().select().from(payrollItems).where(eq(payrollItems.id, id));
     return result[0];
@@ -300,7 +283,6 @@ export class DatabaseStorage implements IStorage {
     return result.length > 0;
   }
   
-  // DeductionType Methods
   async getDeductionType(id: number): Promise<DeductionType | undefined> {
     const result = await getDb().select().from(deductionTypes).where(eq(deductionTypes.id, id));
     return result[0];
@@ -329,7 +311,6 @@ export class DatabaseStorage implements IStorage {
     return result.length > 0;
   }
   
-  // Deduction Methods
   async getDeduction(id: number): Promise<Deduction | undefined> {
     const result = await getDb().select().from(deductions).where(eq(deductions.id, id));
     return result[0];
@@ -358,7 +339,6 @@ export class DatabaseStorage implements IStorage {
     return result.length > 0;
   }
   
-  // AllowanceType Methods
   async getAllowanceType(id: number): Promise<AllowanceType | undefined> {
     const result = await getDb().select().from(allowanceTypes).where(eq(allowanceTypes.id, id));
     return result[0];
@@ -387,7 +367,6 @@ export class DatabaseStorage implements IStorage {
     return result.length > 0;
   }
   
-  // Allowance Methods
   async getAllowance(id: number): Promise<Allowance | undefined> {
     const result = await getDb().select().from(allowances).where(eq(allowances.id, id));
     return result[0];
@@ -416,7 +395,6 @@ export class DatabaseStorage implements IStorage {
     return result.length > 0;
   }
   
-  // Setting Methods
   async getSetting(key: string): Promise<Setting | undefined> {
     const result = await getDb().select().from(settings).where(eq(settings.key, key));
     return result[0];
@@ -445,7 +423,6 @@ export class DatabaseStorage implements IStorage {
     return result.length > 0;
   }
 
-  // Approval Methods
   async getApproval(id: number): Promise<Approval | undefined> {
     const result = await getDb().select().from(approvals).where(eq(approvals.id, id));
     return result[0];
@@ -478,7 +455,6 @@ export class DatabaseStorage implements IStorage {
     return result.length > 0;
   }
   
-  // Activity Methods
   async getActivity(id: number): Promise<Activity | undefined> {
     const result = await getDb().select().from(activities).where(eq(activities.id, id));
     return result[0];

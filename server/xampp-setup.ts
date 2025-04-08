@@ -4,12 +4,10 @@ import fs from "fs";
 import path from "path";
 import { log } from "./vite";
 
-// Get path to SQL script
 const getSqlFilePath = () => {
   return path.resolve(import.meta.dirname, "..", "setup", "payroll_setup.sql");
 };
 
-// Test database connection
 export const testDatabaseConnection = async (req: Request, res: Response) => {
   const { host, port, database, username, password } = req.body;
   
@@ -23,7 +21,6 @@ export const testDatabaseConnection = async (req: Request, res: Response) => {
   let connection: Connection | null = null;
   
   try {
-    // First try to connect to MySQL server
     connection = await createConnection({
       host,
       port: parseInt(port),

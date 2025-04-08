@@ -69,20 +69,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.id;
       const { fullName, username, currentPassword, newPassword } = req.body;
       
-      // If changing password, verify current password
       if (currentPassword && newPassword) {
         const user = await storage.getUser(userId);
         if (!user) {
           throw new ApiError('User not found', 404);
         }
         
-        // We need to verify the current password with our password comparison function
         const isPasswordValid = await comparePasswords(currentPassword, user.password);
         if (!isPasswordValid) {
           throw new ApiError('Current password is incorrect', 400);
         }
         
-        // Update with new password - hash the new password first
         const hashedPassword = await hashPassword(newPassword);
         const updatedUser = await storage.updateUser(userId, {
           fullName,
@@ -94,11 +91,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           throw new ApiError('Failed to update user', 500);
         }
         
-        // Return user without password
         const { password, ...userWithoutPassword } = updatedUser;
         res.json(userWithoutPassword);
       } else {
-        // Just update name/username
         const updatedUser = await storage.updateUser(userId, {
           fullName,
           username
@@ -108,7 +103,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
           throw new ApiError('Failed to update user', 500);
         }
         
-        // Return user without password
         const { password, ...userWithoutPassword } = updatedUser;
         res.json(userWithoutPassword);
       }
@@ -119,7 +113,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Employee Routes
   router.get('/employees', authenticate, async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const employees = await storage.getAllEmployees();
@@ -177,7 +170,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         throw new ApiError('Invalid employee ID', 400);
       }
       
-      // We use partial validation since this is an update
       const employeeData = insertEmployeeSchema.partial().parse(req.body);
       const updatedEmployee = await storage.updateEmployee(id, employeeData);
       
@@ -232,7 +224,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Department Routes
   router.get('/departments', authenticate, async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const departments = await storage.getAllDepartments();
@@ -264,7 +255,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Attendance Routes
   router.get('/attendance/employee/:id', authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
       const employeeId = Number(req.params.id);
@@ -317,7 +307,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Payroll Period Routes
   router.get('/payroll-periods', authenticate, async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const periods = await storage.getAllPayrollPeriods();
@@ -349,7 +338,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Payroll Item Routes
   router.get('/payroll-items/period/:id', authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
       const periodId = Number(req.params.id);
@@ -386,7 +374,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Deduction Type Routes
   router.get('/deduction-types', authenticate, async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const types = await storage.getAllDeductionTypes();
@@ -418,7 +405,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Deduction Routes
   router.get('/deductions/payroll-item/:id', authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
       const payrollItemId = Number(req.params.id);
@@ -455,7 +441,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Allowance Type Routes
   router.get('/allowance-types', authenticate, async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const types = await storage.getAllAllowanceTypes();
@@ -487,7 +472,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Allowance Routes
   router.get('/allowances/payroll-item/:id', authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
       const payrollItemId = Number(req.params.id);
@@ -524,7 +508,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Settings Routes
   router.get('/settings', authenticate, async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const allSettings = await storage.getAllSettings();
@@ -567,7 +550,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.json(updatedSetting);
       }
       
-      // Create a new setting
       const settingData = insertSettingSchema.parse(req.body);
       const newSetting = await storage.createSetting(settingData);
       
@@ -588,7 +570,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Approval Routes
   router.get('/approvals/pending', authenticate, async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const approvals = await storage.getPendingApprovals();
@@ -692,7 +673,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Activity Routes
   router.get('/activities/recent/:limit', authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
       const limit = Number(req.params.limit) || 10;
@@ -729,7 +709,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Create default deduction types
       const deductionTypes = await storage.getAllDeductionTypes();
       if (deductionTypes.length === 0) {
         await storage.createDeductionType({

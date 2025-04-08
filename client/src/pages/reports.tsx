@@ -72,8 +72,14 @@ export default function Reports() {
   const [endDate, setEndDate] = useState<Date>(endOfMonth(subMonths(new Date(), 1)));
   const [departmentFilter, setDepartmentFilter] = useState<string>("");
 
+  // Define the Department type
+  interface Department {
+    id: string;
+    name: string;
+  }
+
   // Fetch departments for filter
-  const { data: departments = [] } = useQuery({
+  const { data: departments = [] } = useQuery<Department[]>({
     queryKey: ['/api/departments'],
   });
 

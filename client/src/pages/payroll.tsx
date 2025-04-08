@@ -53,18 +53,15 @@ export default function Payroll() {
 
   const { toast } = useToast();
 
-  // Fetch payroll periods
   const { data: payrollPeriods = [] as PayrollPeriod[], isLoading: isLoadingPeriods } = useQuery<PayrollPeriod[]>({
     queryKey: ['/api/payroll-periods'],
   });
 
-  // Fetch payroll items for selected period
   const { data: payrollItems = [], isLoading: isLoadingItems } = useQuery<any[]>({
     queryKey: ['/api/payroll-items/period', selectedPeriod],
     enabled: !!selectedPeriod,
   });
 
-  // Fetch employees
   const { data: employees = [] } = useQuery<any[]>({
     queryKey: ['/api/employees'],
   });
@@ -84,14 +81,13 @@ export default function Payroll() {
     ],
     allowances: [],
     companyDetails: {
-      name: "PayrollPro Inc.",
-      address: "123 Business St, Tech City, 12345",
-      phone: "+1 (555) 123-4567",
-      email: "payroll@payrollpro.com"
+      name: "Native254 Inc.",
+      address: "39 Ruai, Nairobi, 00300",
+      phone: "+254 716 369 996",
+      email: "Info.native254@gmail.com"
     }
   } : null;
 
-  // Create columns for payroll periods table
   const periodColumns: ColumnDef<any>[] = [
     {
       accessorKey: "id",
@@ -148,7 +144,6 @@ export default function Payroll() {
     },
   ];
 
-  // Create columns for payroll items table
   const itemColumns: ColumnDef<any>[] = [
     {
       accessorKey: "employee",

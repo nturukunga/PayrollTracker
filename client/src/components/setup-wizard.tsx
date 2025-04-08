@@ -28,7 +28,6 @@ export function SetupWizard({ isOpen, onClose }: SetupWizardProps) {
   const [setupStatus, setSetupStatus] = useState<"idle" | "setting-up" | "success" | "error">("idle");
   const { toast } = useToast();
 
-  // Test database connection mutation
   const testConnectionMutation = useMutation({
     mutationFn: async () => {
       setTestStatus("testing");
@@ -56,7 +55,6 @@ export function SetupWizard({ isOpen, onClose }: SetupWizardProps) {
     },
   });
 
-  // Initialize database mutation
   const initDatabaseMutation = useMutation({
     mutationFn: async () => {
       setSetupStatus("setting-up");
@@ -90,23 +88,19 @@ export function SetupWizard({ isOpen, onClose }: SetupWizardProps) {
     },
   });
 
-  // Handle database input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setDbConfig(prev => ({ ...prev, [name]: value }));
   };
 
-  // Handle test connection
   const handleTestConnection = () => {
     testConnectionMutation.mutate();
   };
 
-  // Handle database setup
   const handleDatabaseSetup = () => {
     initDatabaseMutation.mutate();
   };
 
-  // Download SQL script
   const handleDownloadSQL = async () => {
     try {
       const response = await fetch('/api/setup/sql-export');
@@ -134,7 +128,6 @@ export function SetupWizard({ isOpen, onClose }: SetupWizardProps) {
     }
   };
 
-  // Steps content
   const getStepContent = () => {
     switch (step) {
       case 1:

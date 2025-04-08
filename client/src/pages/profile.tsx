@@ -20,7 +20,6 @@ const profileSchema = z.object({
   newPassword: z.string().min(6, "Password must be at least 6 characters").optional(),
   confirmPassword: z.string().optional(),
 }).refine((data) => {
-  // If one password field is filled, all must be filled
   if (data.currentPassword || data.newPassword || data.confirmPassword) {
     return data.currentPassword && data.newPassword && data.confirmPassword;
   }
@@ -29,7 +28,6 @@ const profileSchema = z.object({
   message: "All password fields are required when changing password",
   path: ["currentPassword"]
 }).refine((data) => {
-  // If setting new password, confirm must match
   if (data.newPassword && data.confirmPassword) {
     return data.newPassword === data.confirmPassword;
   }
@@ -57,7 +55,6 @@ export default function ProfilePage() {
     },
   });
   
-  // Set form values when user data is loaded
   useState(() => {
     if (user) {
       form.reset({

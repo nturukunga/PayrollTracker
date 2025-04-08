@@ -4,7 +4,6 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 
-// Pages
 import Dashboard from "@/pages/dashboard";
 import Employees from "@/pages/employees";
 import EmployeeDetail from "@/pages/employee-detail";
@@ -16,11 +15,9 @@ import Profile from "@/pages/profile";
 import AuthPage from "@/pages/auth-page";
 import ContactSupport from "@/pages/contact-support";
 
-// Auth hook
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "./lib/protected-route";
 
-// Define a type for EmployeeDetail props to fix TypeScript error
 interface EmployeeDetailProps {
   id: string;
 }

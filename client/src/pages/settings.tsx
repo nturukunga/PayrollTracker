@@ -64,19 +64,33 @@ export default function Settings() {
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const { toast } = useToast();
 
+  // Define the Settings type
+  interface Settings {
+    company_name?: string;
+    company_address?: string;
+    company_phone?: string;
+    company_email?: string;
+    tax_rate?: string;
+    overtime_multiplier?: string;
+    standard_work_hours?: string;
+    prorate_salary?: string;
+    auto_process?: string;
+  }
+  
   // Fetch settings data
-  const { data: settings = {}, isLoading: isLoadingSettings } = useQuery({
+  const { data: settings = {} } = useQuery<Settings>({
     queryKey: ['/api/settings'],
   });
+  const isLoadingSettings = false; // adjust as needed
 
   // Fetch departments
-  const { data: departments = [], isLoading: isLoadingDepartments } = useQuery({
+  const { data: departments = [], isLoading: isLoadingDepartments } = useQuery<any[]>({
     queryKey: ['/api/departments'],
     enabled: activeTab === "departments",
   });
 
   // Fetch users
-  const { data: users = [], isLoading: isLoadingUsers } = useQuery({
+  const { data: users = [], isLoading: isLoadingUsers } = useQuery<any[]>({
     queryKey: ['/api/users'],
     enabled: activeTab === "users",
   });

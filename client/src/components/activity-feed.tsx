@@ -17,7 +17,7 @@ export function ActivityFeed({
   showViewAll = true,
   onViewAll
 }: ActivityFeedProps) {
-  // Function to get the appropriate icon for each activity type
+
   const getActivityIcon = (activity: ActivityItem) => {
     const IconComponent = getIconForActivity(activity.action, activity.entityType);
     return (
@@ -81,7 +81,6 @@ export function ActivityFeed({
   );
 }
 
-// Helper function to determine the icon based on activity type
 function getIconForActivity(action: string, entityType: string | null): React.ComponentType<any> {
   if (action === 'create' && entityType === 'employee') return UserPlus;
   if (action === 'create' && entityType === 'payrollItem') return DollarSign;
@@ -89,10 +88,9 @@ function getIconForActivity(action: string, entityType: string | null): React.Co
   if (action.includes('approve')) return BadgeCheck;
   if (action.includes('login') || action.includes('logout')) return Clock;
   
-  return Activity; // Default icon
+  return Activity; 
 }
 
-// Helper function to generate readable description
 function getActivityDescription(activity: ActivityItem): string {
   const entityName = activity.details?.split(':')[1]?.trim() || '';
   

@@ -47,22 +47,18 @@ export default function Attendance() {
   const [endDate, setEndDate] = useState<Date>(endOfMonth(new Date()));
   const [departmentFilter, setDepartmentFilter] = useState<string>("");
 
-  // Fetch attendance records
   const { data: attendanceRecords = [], isLoading: isLoadingAttendance } = useQuery({
     queryKey: ['/api/attendance/range', { startDate: startDate.toISOString(), endDate: endDate.toISOString() }],
   });
 
-  // Fetch employees for dropdown and display names
   const { data: employees = [] } = useQuery({
     queryKey: ['/api/employees'],
   });
 
-  // Fetch departments for filter
   const { data: departments = [] } = useQuery({
     queryKey: ['/api/departments'],
   });
 
-  // Create columns for attendance table
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: "date",
@@ -99,7 +95,6 @@ export default function Attendance() {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {
-        // Define custom styling based on status instead of using variants
         const getBadgeClassByStatus = (status: string): string => {
           switch(status) {
             case 'present': 

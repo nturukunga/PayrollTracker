@@ -9,10 +9,8 @@ import { User } from "@shared/schema";
 import connectPg from "connect-pg-simple";
 import { pool } from "./db";
 
-// Add user to Express namespace for TypeScript
 declare global {
   namespace Express {
-    // Define User interface with properties we need
     interface User {
       id: number;
       username: string;
@@ -26,7 +24,6 @@ declare global {
 
 const scryptAsync = promisify(scrypt);
 
-// Initialize PostgreSQL session store
 const PostgresSessionStore = connectPg(session);
 const sessionStore = new PostgresSessionStore({
   pool,
@@ -34,18 +31,13 @@ const sessionStore = new PostgresSessionStore({
   createTableIfMissing: true
 });
 
-/**
- * Hash password using scrypt
- */
 export async function hashPassword(password: string): Promise<string> {
   const salt = randomBytes(16).toString("hex");
   const buf = (await scryptAsync(password, salt, 64)) as Buffer;
   return `${buf.toString("hex")}.${salt}`;
 }
 
-/**
- * Compare supplied password with stored password
- */
+
 export async function comparePasswords(supplied: string, stored: string): Promise<boolean> {
   // If stored password doesn't have the expected format, it may be a plaintext password from old data
   if (!stored.includes('.')) {
@@ -54,7 +46,6 @@ export async function comparePasswords(supplied: string, stored: string): Promis
   
   const [hashed, salt] = stored.split(".");
   
-  // Ensure we have both hash and salt
   if (!hashed || !salt) {
     console.error("Invalid password format:", { hashed: !!hashed, salt: !!salt });
     return false;
@@ -65,11 +56,8 @@ export async function comparePasswords(supplied: string, stored: string): Promis
   return timingSafeEqual(hashedBuf, suppliedBuf);
 }
 
-/**
- * Setup authentication middleware and routes
- */
+
 export function setupAuth(app: Express) {
-  // Configure session
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || "payroll-pro-secret-key",
     resave: false,
@@ -86,7 +74,6 @@ export function setupAuth(app: Express) {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  // Configure passport local strategy
   passport.use(
     new LocalStrategy(async (username, password, done) => {
       try {
@@ -102,7 +89,6 @@ export function setupAuth(app: Express) {
     }),
   );
 
-  // Configure serialization/deserialization
   passport.serializeUser((user, done) => {
     done(null, user.id);
   });
@@ -116,16 +102,13 @@ export function setupAuth(app: Express) {
     }
   });
 
-  // Register routes
   app.post("/api/auth/register", async (req, res, next) => {
     try {
-      // Check if username exists
       const existingUser = await storage.getUserByUsername(req.body.username);
       if (existingUser) {
         return res.status(400).json({ message: "Username already exists" });
       }
 
-      // Create user
       const user = await storage.createUser({
         ...req.body,
         password: await hashPassword(req.body.password),
@@ -142,10 +125,8 @@ export function setupAuth(app: Express) {
         ipAddress: req.ip || "127.0.0.1"
       });
 
-      // Login the user
       req.login(user, (err) => {
         if (err) return next(err);
-        // Return user without password
         const { password, ...userWithoutPassword } = user;
         res.status(201).json(userWithoutPassword);
       });
@@ -178,7 +159,6 @@ export function setupAuth(app: Express) {
           console.error("Error logging activity:", error);
         }
         
-        // Return user without password
         const { password, ...userWithoutPassword } = user;
         res.json(userWithoutPassword);
       });
@@ -215,7 +195,6 @@ export function setupAuth(app: Express) {
       return res.status(401).json({ message: "Not authenticated" });
     }
     
-    // Return user without password
     const { password, ...userWithoutPassword } = req.user as User;
     res.json(userWithoutPassword);
   });

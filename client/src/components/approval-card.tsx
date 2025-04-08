@@ -24,13 +24,11 @@ export function ApprovalCard({ approval }: ApprovalCardProps) {
   const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
   const [rejectionReason, setRejectionReason] = useState('');
 
-  // Format approval type for display
   const formattedType = approval.type
     .split('_')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 
-  // Format approval details based on type
   const getApprovalDetails = () => {
     switch (approval.type) {
       case 'overtime':

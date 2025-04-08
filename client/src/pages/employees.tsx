@@ -49,12 +49,10 @@ export default function Employees() {
   const [editEmployeeId, setEditEmployeeId] = useState<number | null>(null);
   const [employeeToDelete, setEmployeeToDelete] = useState<number | null>(null);
 
-  // Fetch employees data
-  const { data: employees = [], isLoading } = useQuery({
+  const { data: employees = [] as EmployeeWithDetails[], isLoading } = useQuery<EmployeeWithDetails[]>({
     queryKey: ['/api/employees'],
   });
 
-  // Delete employee mutation
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
       const response = await apiRequest('DELETE', `/api/employees/${id}`);
@@ -77,13 +75,11 @@ export default function Employees() {
     },
   });
 
-  // Process employees data to add initials
   const employeesWithDetails: EmployeeWithDetails[] = employees.map(employee => ({
     ...employee,
     initials: getInitials(employee.firstName, employee.lastName),
   }));
 
-  // Create columns for employee table
   const columns: ColumnDef<EmployeeWithDetails>[] = [
     {
       accessorKey: "employeeCode",
@@ -131,7 +127,7 @@ export default function Employees() {
       cell: ({ row }) => {
         const status = row.original.status;
         return (
-          <Badge variant={status === 'active' ? 'success' : status === 'on_leave' ? 'warning' : 'default'}>
+          <Badge variant={status === 'active' ? 'secondary' : status === 'on_leave' ? 'outline' : 'default'}>
             {status === 'active' ? 'Active' : status === 'on_leave' ? 'On Leave' : 'Terminated'}
           </Badge>
         );

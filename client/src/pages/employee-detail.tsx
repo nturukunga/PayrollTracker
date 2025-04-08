@@ -22,6 +22,17 @@ interface EmployeeDetailProps {
   id: string;
 }
 
+interface PayrollItem {
+  id: number;
+  taxAmount: number;
+  basicSalary: number;
+  grossPay: number;
+  otherDeductions: number;
+  netPay: number;
+  startDate: string;
+  endDate: string;
+}
+
 export default function EmployeeDetail({ id }: EmployeeDetailProps) {
   const [activeTab, setActiveTab] = useState("profile");
   const [isPayrollFormOpen, setIsPayrollFormOpen] = useState(false);
@@ -37,18 +48,14 @@ export default function EmployeeDetail({ id }: EmployeeDetailProps) {
     enabled: !isNaN(employeeId)
   });
 
-  // Fetch employee's payroll items
-  const { data: payrollItems = [], isLoading: isLoadingPayroll } = useQuery({
+  // Fetch employee's payroll items with correct type
+  const { data: payrollItems = [], isLoading: isLoadingPayroll } = useQuery<PayrollItem[]>({
     queryKey: ['/api/payroll-items/employee', employeeId],
     enabled: !isNaN(employeeId)
   });
 
-  // Fetch employee's attendance records
-  const { data: attendanceRecords = [], isLoading: isLoadingAttendance } = useQuery({
-    queryKey: ['/api/attendance/employee', employeeId],
-    enabled: !isNaN(employeeId) && activeTab === "attendance"
-  });
-
+  // ...remaining code unchanged...
+  
   // Generate payslip data for the first payroll item (for demo purposes)
   const payslipData = payrollItems.length > 0 && employee ? {
     employee: employee,
@@ -65,10 +72,10 @@ export default function EmployeeDetail({ id }: EmployeeDetailProps) {
     ],
     allowances: [],
     companyDetails: {
-      name: "PayrollPro Inc.",
-      address: "123 Business St, Tech City, 12345",
-      phone: "+1 (555) 123-4567",
-      email: "payroll@payrollpro.com"
+      name: "Native254 Inc.",
+      address: "39 Ruai, Nairobi, 00300",
+      phone: "+254 716 369 996",
+      email: "Info.native254@gmail.com"
     }
   } : null;
 

@@ -2,7 +2,6 @@ import { pgTable, text, serial, integer, boolean, date, timestamp, doublePrecisi
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// User authentication table
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
@@ -13,7 +12,6 @@ export const users = pgTable("users", {
   isActive: boolean("is_active").notNull().default(true),
 });
 
-// Employee table
 export const employees = pgTable("employees", {
   id: serial("id").primaryKey(),
   employeeCode: text("employee_code").notNull().unique(),
@@ -34,14 +32,12 @@ export const employees = pgTable("employees", {
   bankAccountNumber: text("bank_account_number"),
 });
 
-// Department table
 export const departments = pgTable("departments", {
   id: serial("id").primaryKey(),
   name: text("name").notNull().unique(),
   description: text("description"),
 });
 
-// Attendance table
 export const attendance = pgTable("attendance", {
   id: serial("id").primaryKey(),
   employeeId: integer("employee_id").notNull().references(() => employees.id),
@@ -57,7 +53,6 @@ export const attendance = pgTable("attendance", {
   };
 });
 
-// Payroll Period table
 export const payrollPeriods = pgTable("payroll_periods", {
   id: serial("id").primaryKey(),
   startDate: date("start_date").notNull(),
@@ -70,7 +65,6 @@ export const payrollPeriods = pgTable("payroll_periods", {
   };
 });
 
-// Payroll Item table
 export const payrollItems = pgTable("payroll_items", {
   id: serial("id").primaryKey(),
   payrollPeriodId: integer("payroll_period_id").notNull().references(() => payrollPeriods.id),
@@ -92,7 +86,6 @@ export const payrollItems = pgTable("payroll_items", {
   };
 });
 
-// Deduction Type table
 export const deductionTypes = pgTable("deduction_types", {
   id: serial("id").primaryKey(),
   name: text("name").notNull().unique(),
@@ -102,7 +95,6 @@ export const deductionTypes = pgTable("deduction_types", {
   isRequired: boolean("is_required").notNull().default(false),
 });
 
-// Deduction table
 export const deductions = pgTable("deductions", {
   id: serial("id").primaryKey(),
   payrollItemId: integer("payroll_item_id").notNull().references(() => payrollItems.id),
@@ -115,7 +107,6 @@ export const deductions = pgTable("deductions", {
   };
 });
 
-// Allowance Type table
 export const allowanceTypes = pgTable("allowance_types", {
   id: serial("id").primaryKey(),
   name: text("name").notNull().unique(),
@@ -123,7 +114,6 @@ export const allowanceTypes = pgTable("allowance_types", {
   isTaxable: boolean("is_taxable").notNull().default(true),
 });
 
-// Allowance table
 export const allowances = pgTable("allowances", {
   id: serial("id").primaryKey(),
   payrollItemId: integer("payroll_item_id").notNull().references(() => payrollItems.id),
@@ -136,7 +126,6 @@ export const allowances = pgTable("allowances", {
   };
 });
 
-// Setting table for system configuration
 export const settings = pgTable("settings", {
   id: serial("id").primaryKey(),
   key: text("key").notNull().unique(),
@@ -144,7 +133,6 @@ export const settings = pgTable("settings", {
   description: text("description"),
 });
 
-// Approvals for leave, overtime, etc.
 export const approvals = pgTable("approvals", {
   id: serial("id").primaryKey(),
   employeeId: integer("employee_id").notNull().references(() => employees.id),
@@ -161,7 +149,6 @@ export const approvals = pgTable("approvals", {
   rejectedReason: text("rejected_reason"),
 });
 
-// Activities log
 export const activities = pgTable("activities", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id),
@@ -173,7 +160,6 @@ export const activities = pgTable("activities", {
   ipAddress: text("ip_address"),
 });
 
-// Create Insert Schemas
 export const insertUserSchema = createInsertSchema(users).omit({ id: true });
 export const insertEmployeeSchema = createInsertSchema(employees).omit({ id: true });
 export const insertDepartmentSchema = createInsertSchema(departments).omit({ id: true });
@@ -196,7 +182,6 @@ export const insertActivitySchema = createInsertSchema(activities).omit({
   timestamp: true 
 });
 
-// Define Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 
