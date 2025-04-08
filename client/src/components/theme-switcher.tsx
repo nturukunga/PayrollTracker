@@ -55,11 +55,12 @@ export function ThemeSwitcher() {
         if (themeScript) {
           themeScript.textContent = JSON.stringify(themeObject);
           
-          // Force theme update by dispatching a custom event
-          window.dispatchEvent(new CustomEvent("theme-update"));
+          const root = document.documentElement;
+          root.className = theme.appearance === 'dark' ? 'dark' : '';
+          root.style.setProperty('--primary', theme.primary);
           
-          // Refresh page to apply theme (for demonstration - in production, you'd use a more elegant solution)
-          window.location.reload();
+          // Dispatch theme change event
+          window.dispatchEvent(new CustomEvent("theme-update"));
         }
         
         toast({
