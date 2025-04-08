@@ -1,0 +1,122 @@
+**Project Overview**
+
+PayrollPro is a comprehensive payroll management system built with:
+
+Frontend: React + TypeScript + Vite
+Backend: Express.js (Node.js)
+Database: PostgreSQL
+UI Framework: Tailwind CSS + Shadcn/UI components
+
+**Core Features**
+Employee Management
+Attendance Tracking
+Payroll Processing
+Financial Management
+Approval System
+Reporting
+
+**Key Technologies Used**
+Frontend Libraries:
+
+React Query for data fetching
+React Hook Form for forms
+Zod for validation
+Wouter for routing
+Recharts for charts/graphs
+Tailwind CSS for styling
+Radix UI primitives
+Lucide icons
+
+
+Backend Libraries:
+
+Express.js
+Drizzle ORM
+PostgreSQL
+Passport.js for authentication
+Express Session
+
+
+Code Structure
+├── client/          # Frontend React application
+│   ├── src/
+│   │   ├── components/  # Reusable UI components
+│   │   ├── hooks/      # Custom React hooks
+│   │   ├── lib/        # Utilities and types
+│   │   ├── pages/      # Page components
+│   │   └── App.tsx     # Main app component
+├── server/          # Backend Express application
+│   ├── auth.ts      # Authentication logic
+│   ├── db.ts        # Database connection
+│   ├── routes.ts    # API routes
+│   └── index.ts     # Server entry point
+└── shared/          # Shared code
+    └── schema.ts    # Database schema
+
+
+Key Components
+Database Schema (shared/schema.ts):
+Defines tables for users, employees, attendance, payroll, etc.
+Uses Drizzle ORM for type-safe database operations
+
+Authentication (server/auth.ts):
+Implements Passport.js local strategy
+Handles user sessions
+
+UI Components (client/src/components):
+Form components for data entry
+Dashboard widgets
+Data tables
+Charts and reports
+
+Pages (client/src/pages):
+Dashboard: Overview and metrics
+Employees: Employee management
+Payroll: Process payments
+Reports: Generate reports
+Settings: System configuration
+How to Run Locally
+
+
+Install dependencies:
+npm install
+Set up environment variables for database connection
+
+Start development server:
+
+npm run dev
+The application will run on port 5000.
+
+Styling System
+The project uses:
+
+Tailwind CSS for utility-based styling
+Shadcn UI components for consistent design
+Theme customization via theme.json
+Responsive design patterns
+CSS modules for component-specific styles
+The styling is primarily handled in:
+
+tailwind.config.ts (Tailwind configuration)
+theme.json (Theme variables)
+*.css files (Component-specific styles)
+
+Learning Points
+Modern React Patterns:
+Custom hooks for reusable logic
+Form handling with React Hook Form
+Data fetching with React Query
+TypeScript for type safety
+
+Backend Architecture:
+RESTful API design
+Session-based authentication
+Database schema design
+Error handling
+
+UI/UX Best Practices:
+Component composition
+Responsive design
+Accessibility considerations
+Theme customization
+This codebase demonstrates professional-grade application architecture with proper separation of concerns, type safety, and modern development practices.
