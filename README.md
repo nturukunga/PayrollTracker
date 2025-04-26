@@ -124,6 +124,6 @@ Email: info.native254@gmail.com
 
 
 
-**Coded with 💻 and 🖤 by Howie and AI ofcourse**  
+**Coded with 💻 and 🖤 by Howie **  
 [![Twitter](https://img.shields.io/badge/-@Howie251-1DA1F2?logo=twitter&logoColor=white)](https://twitter.com/Howie251) 
 [![GitHub](https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white)](https://github.com/nturukunga)
