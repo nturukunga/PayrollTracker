@@ -38,3 +38,5 @@ coverage/
 .breakpoints
 .DS_Store
 Thumbs.db
+.env
+*.local
