@@ -32,6 +32,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { useCallback } from "react";
+import clsx from 'clsx';
 
 // Extend the schema with additional validation
 const employeeFormSchema = insertEmployeeSchema.extend({
@@ -304,7 +305,7 @@ export function EmployeeForm({ isOpen, onClose, employeeId }: EmployeeFormProps)
                         <FormControl>
                           <Button
                             variant={"outline"}
-                            className={cn(
+                            className={clsx(
                               "pl-3 text-left font-normal",
                               !field.value && "text-muted-foreground"
                             )}
@@ -347,7 +348,7 @@ export function EmployeeForm({ isOpen, onClose, employeeId }: EmployeeFormProps)
                         <FormControl>
                           <Button
                             variant={"outline"}
-                            className={cn(
+                            className={clsx(
                               "pl-3 text-left font-normal",
                               !field.value && "text-muted-foreground"
                             )}

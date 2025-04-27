@@ -8,6 +8,7 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { formatCurrency, getInitials, formatDate } from "@/lib/types";
 import { type EmployeeWithDetails } from "@/lib/types";
 import { Link, useLocation } from "wouter";
+import { cn } from "@/lib/utils";
 
 import {
   Eye,

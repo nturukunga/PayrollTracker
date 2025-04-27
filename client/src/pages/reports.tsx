@@ -41,14 +41,6 @@ import {
 } from "recharts";
 
 // Sample data for charts
-const samplePayrollData = [
-  { name: "Jan", amount: 42500 },
-  { name: "Feb", amount: 43200 },
-  { name: "Mar", amount: 45800 },
-  { name: "Apr", amount: 44900 },
-  { name: "May", amount: 46300 },
-  { name: "Jun", amount: 48500 },
-];
 
 const sampleDepartmentData = [
   { name: "Engineering", value: 45, color: "#1976d2" },
@@ -83,6 +75,19 @@ export default function Reports() {
     queryKey: ['/api/departments'],
   });
 
+  // Fetch payroll data
+  const { data: payrollData = [] } = useQuery({
+    queryKey: ['/api/payroll/monthly-summary'],
+    select: (data) => ({
+      labels: data.map(d => format(new Date(d.month), 'MMM')),
+      datasets: [{
+        data: data.map(d => d.amount),
+        label: 'Payroll Amount'
+      }]
+    })
+  });
+
+
   return (
     <Layout>
       <PageHeader 
@@ -90,14 +95,33 @@ export default function Reports() {
         subtitle="Generate and analyze payroll and attendance reports"
         actions={
           <div className="flex space-x-2">
-            <Button variant="outline" className="flex items-center">
-              <FileSpreadsheet className="mr-2 h-4 w-4" />
-              Export to Excel
-            </Button>
-            <Button variant="outline" className="flex items-center">
-              <FileText className="mr-2 h-4 w-4" />
-              Export to PDF
-            </Button>
+            <Button 
+            variant="outline" 
+            className="flex items-center"
+            onClick={() => {
+              // Implement Excel export
+              const csvContent = "data:text/csv;charset=utf-8,";
+              // Add your CSV data here
+              const link = document.createElement("a");
+              link.href = csvContent;
+              link.download = "report.csv";
+              link.click();
+            }}
+          >
+            <FileSpreadsheet className="mr-2 h-4 w-4" />
+            Export to Excel
+          </Button>
+          <Button 
+            variant="outline" 
+            className="flex items-center"
+            onClick={() => {
+              // Implement PDF export
+              window.print();
+            }}
+          >
+            <FileText className="mr-2 h-4 w-4" />
+            Export to PDF
+          </Button>
           </div>
         }
       />
@@ -108,7 +132,7 @@ export default function Reports() {
           <TabsTrigger value="attendance">Attendance Reports</TabsTrigger>
           <TabsTrigger value="employees">Employee Reports</TabsTrigger>
         </TabsList>
-        
+
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>Report Filters</CardTitle>
@@ -135,7 +159,7 @@ export default function Reports() {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-neutral-500 mb-1">Start Date</label>
                 <Popover>
@@ -161,7 +185,7 @@ export default function Reports() {
                   </PopoverContent>
                 </Popover>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-neutral-500 mb-1">End Date</label>
                 <Popover>
@@ -187,7 +211,7 @@ export default function Reports() {
                   </PopoverContent>
                 </Popover>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-neutral-500 mb-1">Department</label>
                 <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
@@ -204,12 +228,12 @@ export default function Reports() {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <Button className="mt-4 md:mt-0">Generate Report</Button>
             </div>
           </CardContent>
         </Card>
-        
+
         <TabsContent value="payroll">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <Card>
@@ -223,7 +247,7 @@ export default function Reports() {
                 <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
-                      data={samplePayrollData}
+                      data={payrollData.datasets ? payrollData.datasets[0].data.map((amount, index) => ({name: payrollData.labels[index], amount})) : samplePayrollData}
                       margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                     >
                       <CartesianGrid strokeDasharray="3 3" />
@@ -240,7 +264,7 @@ export default function Reports() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader>
                 <CardTitle>Payroll Distribution by Department</CardTitle>
@@ -274,7 +298,7 @@ export default function Reports() {
               </CardContent>
             </Card>
           </div>
-          
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
@@ -295,7 +319,7 @@ export default function Reports() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="attendance">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <Card>
@@ -330,7 +354,7 @@ export default function Reports() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader>
                 <CardTitle>Department Attendance Comparison</CardTitle>
@@ -366,7 +390,7 @@ export default function Reports() {
               </CardContent>
             </Card>
           </div>
-          
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
@@ -387,7 +411,7 @@ export default function Reports() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="employees">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <Card>
@@ -422,7 +446,7 @@ export default function Reports() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader>
                 <CardTitle>Employee Status</CardTitle>
@@ -464,7 +488,7 @@ export default function Reports() {
               </CardContent>
             </Card>
           </div>
-          
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>

@@ -999,3 +999,19 @@ ON DUPLICATE KEY UPDATE id = id;
   const httpServer = createServer(app);
   return httpServer;
 }
+const router = express.Router();
+
+router.get('/api/support/docs', async (req, res) => {
+  const docs = await prisma.supportDocs.findMany();
+  res.json(docs);
+});
+
+router.post('/api/support/chat/start', async (req, res) => {
+  const session = await prisma.chatSession.create({
+    data: {
+      userId: req.user.id,
+      status: 'active'
+    }
+  });
+  res.json(session);
+});
