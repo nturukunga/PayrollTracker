@@ -83,21 +83,7 @@ export function MobileNav({ className }: MobileNavProps) {
       icon: Settings,
       href: "/settings",
     },
-    {
-      label: "Profile",
-      icon: UserCircle,
-      href: "/profile",
-    },
-    {
-      label: "Help & Support",
-      icon: HelpCircle,
-      onClick: () => {
-        toast({
-          title: "Help & Support",
-          description: "Contact administrator for assistance at support@payrollpro.com",
-        });
-      },
-    },
+
     {
       label: "Logout",
       icon: LogOut,

@@ -107,23 +107,6 @@ export function Sidebar({ className }: SidebarProps) {
             </Link>
           ))}
         </div>
-        
-        <div className="absolute bottom-0 w-full p-4 space-y-1">
-          <Link
-            href="/profile"
-            className="flex items-center px-4 py-3 text-neutral-500 hover:bg-blue-50 cursor-pointer"
-          >
-            <UserCircle className="mr-3 h-5 w-5" />
-            <span>Profile</span>
-          </Link>
-          
-          <Link
-            href="/contact-support"
-            className="flex items-center px-4 py-3 text-neutral-500 hover:bg-blue-50 cursor-pointer"
-          >
-            <HelpCircle className="mr-3 h-5 w-5" />
-            <span>Help & Support</span>
-          </Link>
           
           <div 
             className="flex items-center px-4 py-3 text-neutral-500 hover:bg-blue-50 cursor-pointer"
@@ -132,7 +115,6 @@ export function Sidebar({ className }: SidebarProps) {
             <LogOut className="mr-3 h-5 w-5" />
             <span>Logout</span>
           </div>
-        </div>
       </nav>
     </aside>
   );

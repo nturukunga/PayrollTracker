@@ -48,7 +48,7 @@ const logActivity = async (action: string, userId?: number, entityType?: string,
       entityType,
       entityId,
       details,
-      ipAddress: "127.0.0.1" // In a real application, get this from the request
+      ipAddress: "127.0.0.1" 
     });
   } catch (error) {
     console.error("Failed to log activity:", error);
@@ -58,7 +58,6 @@ const logActivity = async (action: string, userId?: number, entityType?: string,
 export async function registerRoutes(app: Express): Promise<Server> {
   const router = express.Router();
 
-  // User Routes - Note: Authentication Routes are now handled by setupAuth in auth.ts
   
   router.put('/users/current', authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -967,8 +966,7 @@ ON DUPLICATE KEY UPDATE id = id;
     res.send(sql);
   });
 
-  // Theme API endpoint
-  router.post('/theme', (req: Request, res: Response, next: NextFunction) => {
+   router.post('/theme', (req: Request, res: Response, next: NextFunction) => {
     try {
       const { primary, variant, appearance, name } = req.body;
       
@@ -980,7 +978,6 @@ ON DUPLICATE KEY UPDATE id = id;
       // For now, we just return success
       
       if (req.user?.id) {
-        // If user is logged in, log this activity
         logActivity(
           'update', 
           req.user?.id, 

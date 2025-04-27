@@ -11,6 +11,7 @@ import { PayrollForm } from "@/components/payroll-form";
 import { formatCurrency, getInitials } from "@/lib/types";
 import { type ColumnDef } from "@tanstack/react-table";
 import { type ActivityItem, type ApprovalWithDetails, type EmployeeWithDetails, type DashboardMetrics } from "@/lib/types";
+import { useForm, FormProvider } from "react-hook-form";
 
 import {
   DollarSign,
